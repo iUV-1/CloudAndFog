@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Tutorial_VolumetricFog
+  m_Shader: {fileID: 4800000, guid: 5e9c6c69d18172b458b5c3fd20ca7dac, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _FogNoise:
+        m_Texture: {fileID: 11700000, guid: bd66ae0d95165c941b9de88c0bae5db0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _DensityMultiplier: 0.08
+    - _DensityThreshold: 0.896
+    - _LightScattering: 0.689
+    - _MaxDistance: 100
+    - _NoiseOffset: 2
+    - _NoiseTiling: 6.1
+    - _StepSize: 2
+    m_Colors:
+    - _Color: {r: 0, g: 0, b: 0, a: 0.57254905}
+    - _LightContribution: {r: 65.72193, g: 65.72193, b: 65.72193, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
