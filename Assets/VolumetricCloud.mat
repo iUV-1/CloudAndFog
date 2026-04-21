@@ -35,8 +35,8 @@ Material:
     - _LightScattering: 0.032
     - _LightStepMultiplier: 5.6
     - _LightSteps: 6.4
-    - _NoiseScale: 0.93
-    - _ShadowDensity: 2.52
+    - _NoiseScale: 1.1
+    - _ShadowDensity: 2.77
     - _StepSize: 0.01
     m_Colors:
     - _Color: {r: 0.93207544, g: 0.9280179, b: 0.86348873, a: 1}

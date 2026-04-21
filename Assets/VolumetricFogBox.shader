@@ -93,10 +93,9 @@ Shader "Custom/VolumetricFogBox"
             // Ray-box intersection (axis-aligned box min/max in object-local space)
             bool RayBoxIntersection(float3 rayOrigin, float3 rayDir, float3 boxMin, float3 boxMax, out float tmin, out float tmax)
             {
-                // slab method
-                float3 invDir = 1.0 / max(abs(rayDir), EPS) * sign(rayDir); // avoid divide by zero
-                float3 t0 = (boxMin - rayOrigin) / max(rayDir, EPS);
-                float3 t1 = (boxMax - rayOrigin) / max(rayDir, EPS);
+                float3 invDir = 1.0 / rayDir; 
+                float3 t0 = (boxMin - rayOrigin) * invDir;
+                float3 t1 = (boxMax - rayOrigin) * invDir;
 
                 float3 tmin3 = min(t0, t1);
                 float3 tmax3 = max(t0, t1);
