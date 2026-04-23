@@ -30,13 +30,13 @@ Material:
     m_Ints: []
     m_Floats:
     - _Density: 0.8
-    - _DensityMultiplier: 3.7
+    - _DensityMultiplier: 2.6
     - _DensityThreshold: 1
-    - _LightScattering: -0.195
-    - _NoiseScale: -1.05
-    - _StepSize: 0.03
+    - _LightScattering: -0.34
+    - _NoiseScale: 2.36
+    - _StepSize: 0.01
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _lightContribution: {r: 99.20683, g: 99.20683, b: 99.20683, a: 1}
+    - _lightContribution: {r: 78.469734, g: 78.469734, b: 78.469734, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -8,4 +8,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/FogDemo.unity
+    guid: 05a99035517f7c84e8db15aea60463cc
+  - enabled: 1
+    path: Assets/Scenes/FullscreenDemo.unity
+    guid: 136254aa00f5e834abe0a6c8decf7455
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0
