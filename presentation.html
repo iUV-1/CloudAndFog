@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Heterogeneous Volume Rendering — Presentation</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #0a0e1a; color: #e8eaf0;
+    height: 100vh; overflow: hidden;
+  }
+  .deck { width: 100vw; height: 100vh; position: relative; }
+  .slide {
+    position: absolute; inset: 0; display: none;
+    flex-direction: column; justify-content: flex-start;
+    align-items: flex-start; padding: 3.5vh 6vw;
+  }
+  .slide.active { display: flex; }
+
+  .slide-1 { background: radial-gradient(ellipse at 25% 55%, #0d1f3c 0%, #07111f 100%); }
+  .slide-2 { background: radial-gradient(ellipse at 70% 30%, #0e1a2e 0%, #070d18 100%); }
+  .slide-3 { background: radial-gradient(ellipse at 20% 60%, #0c1218 0%, #060a10 100%); }
+  .slide-4 { background: radial-gradient(ellipse at 20% 70%, #0b1f17 0%, #060e0b 100%); }
+  .slide-5 { background: radial-gradient(ellipse at 80% 50%, #15102b 0%, #080610 100%); }
+  .slide-6 { background: radial-gradient(ellipse at 50% 40%, #1a120b 0%, #0c0804 100%); }
+  .slide-7 { background: radial-gradient(ellipse at 30% 60%, #0e1a2e 0%, #070d18 100%); }
+  .slide-8 { background: radial-gradient(ellipse at 50% 50%, #0d1220 0%, #07090f 100%); }
+
+  .tag {
+    font-size: 0.65rem; letter-spacing: 0.16em; text-transform: uppercase;
+    color: #6b7aff; margin-bottom: 0.5rem; opacity: 0.85;
+  }
+  h1 { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 700; line-height: 1.1; color: #fff; }
+  h1 span { color: #6b7aff; }
+  h2 { font-size: clamp(1.3rem, 2.5vw, 2rem); font-weight: 700; line-height: 1.15; color: #fff; margin-bottom: 0.7rem; }
+
+  .content { display: flex; gap: 3vw; width: 100%; flex: 1; min-height: 0; margin-top: 0.6rem; }
+  .left  { display: flex; flex-direction: column; gap: 0.5rem; flex: 0 0 42%; min-width: 0; }
+  .right { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; }
+  .right img { max-width: 100%; max-height: 72vh; object-fit: contain; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); }
+
+  /* full-width image row */
+  .img-row { display: flex; gap: 1.5vw; width: 100%; align-items: flex-start; margin-top: 0.6rem; }
+  .img-row figure { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+  .img-row img { width: 100%; max-height: 38vh; object-fit: contain; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); }
+  .img-row figcaption { font-size: 0.72rem; color: #5a6382; text-align: center; }
+
+  ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+  li { font-size: clamp(0.82rem, 1.3vw, 1rem); line-height: 1.5; color: #c8cde8; padding-left: 1.4em; position: relative; }
+  li::before { content: '▸'; position: absolute; left: 0; color: #6b7aff; }
+  .slide-4 li::before { color: #3ecf8e; }
+  .slide-6 li::before { color: #f6a623; }
+
+  .accent { color: #6b7aff; font-weight: 600; }
+  .slide-4 .accent { color: #3ecf8e; }
+  .slide-6 .accent { color: #f6a623; }
+
+  code {
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 5px; padding: 0.1em 0.38em; font-size: 0.87em; color: #a8d8ff;
+  }
+  .code-block {
+    background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.07);
+    border-left: 3px solid #6b7aff; border-radius: 7px;
+    padding: 0.75rem 1rem; font-family: 'Cascadia Code','Fira Code',monospace;
+    font-size: clamp(0.64rem, 1vw, 0.82rem); line-height: 1.55; color: #a8d8ff;
+    margin-top: 0.7rem; white-space: pre;
+  }
+  .code-block.green { border-left-color: #3ecf8e; }
+  .code-block.orange { border-left-color: #f6a623; }
+
+  .source { font-size: 0.68rem; color: #3a4260; font-style: italic; margin-top: auto; padding-top: 0.5rem; word-break: break-all; }
+
+  /* cards */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2vw; width: 100%; margin-top: 0.6rem; }
+  .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0.9rem 1.1rem; }
+  .card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.55rem; }
+  .card ul { gap: 0.38rem; }
+  .card li { font-size: 0.85rem; }
+  .fog-card { border-top: 3px solid #6b7aff; } .fog-card h3 { color: #8a9fff; }
+  .cloud-card { border-top: 3px solid #3ecf8e; } .cloud-card h3 { color: #3ecf8e; }
+  .cloud-card li::before { color: #3ecf8e; }
+
+  /* pills */
+  .pills { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.9rem; }
+  .pill { background: rgba(107,122,255,0.12); border: 1px solid rgba(107,122,255,0.3); border-radius: 999px; padding: 0.25em 0.8em; font-size: 0.78rem; color: #9aaaff; font-weight: 500; }
+
+  /* refs */
+  .ref-list { display: flex; flex-direction: column; gap: 0.85rem; margin-top: 0.5rem; width: 100%; }
+  .ref-item { display: flex; flex-direction: column; gap: 0.12rem; }
+  .ref-num { font-size: 0.68rem; color: #6b7aff; font-weight: 700; letter-spacing: 0.05em; }
+  .ref-title { font-size: clamp(0.82rem, 1.2vw, 0.95rem); color: #c8cde8; }
+  .ref-url { font-size: clamp(0.66rem, 0.9vw, 0.78rem); color: #3a4260; font-family: monospace; word-break: break-all; }
+
+  /* nav */
+  .nav { position: fixed; bottom: 1.4rem; right: 1.8rem; display: flex; align-items: center; gap: 0.7rem; z-index: 100; }
+  .nav-btn { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); color: #e0e4f5; border-radius: 7px; padding: 0.4rem 0.9rem; font-size: 0.82rem; cursor: pointer; transition: background 0.15s; }
+  .nav-btn:hover { background: rgba(255,255,255,0.14); }
+  .counter { font-size: 0.75rem; color: #5a6382; min-width: 4ch; text-align: center; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  .slide.active > * { animation: fadeIn 0.3s ease both; }
+  .slide.active > *:nth-child(2) { animation-delay:.05s; }
+  .slide.active > *:nth-child(3) { animation-delay:.10s; }
+  .slide.active > *:nth-child(4) { animation-delay:.15s; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- 1. Title -->
+  <div class="slide slide-1 active">
+    <div class="tag">CSE 472 — Final Project</div>
+    <div class="content" style="align-items:center;">
+      <div class="left" style="flex:0 0 50%;">
+        <h1>Heterogeneous Volume<br>Rendering<br><span>using Ray Marching</span></h1>
+        <div class="pills">
+          <span class="pill">Raymarching</span>
+          <span class="pill">Beer-Lambert</span>
+          <span class="pill">Henyey-Greenstein</span>
+          <span class="pill">Unity URP</span>
+          <span class="pill">HLSL</span>
+        </div>
+      </div>
+      <div class="right">
+        <img src="their_imgs/s1_1_Google_Shape_55_p13.png" alt="Volumetric cloud render" />
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Modeling -->
+  <div class="slide slide-2">
+    <div class="tag">Modeling</div>
+    <h2>3D Texture from Blender</h2>
+    <div class="content">
+      <div class="left">
+        <ul>
+          <li>Render a volumetric cloud in Blender</li>
+          <li>Take a screenshot of every <span class="accent">Z-slice</span> of the rendered cloud</li>
+          <li>Pack all 64 slices into a <span class="accent">64×64×64 3D texture sprite sheet</span></li>
+          <li>Import into Unity as a 3D texture — used as the <span class="accent">density field</span> for raymarching</li>
+        </ul>
+        <img src="their_imgs/s2_4_Google_Shape_64_p14.png" alt="Blender scene with clipping planes" style="margin-top:0.8rem;max-height:28vh;object-fit:contain;border-radius:8px;border:1px solid rgba(255,255,255,0.08);" />
+        <div class="source">Source: Want to get Blender clouds into #unity? — https://www.youtube.com/watch?v=IGx_I4nzfxQ</div>
+      </div>
+      <div class="right">
+        <img src="their_imgs/s2_2_Google_Shape_62_p14.png" alt="64×64×64 3D texture sprite sheet" />
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Raymarching + IGN -->
+  <div class="slide slide-3">
+    <div class="tag">Rendering</div>
+    <h2>Raymarching & Artifact Reduction</h2>
+    <div class="content">
+      <div class="left">
+        <ul>
+          <li><span class="accent">Raymarch</span> against the 3D density texture generated from Blender</li>
+          <li>Cast a ray per pixel; accumulate density and light at fixed step intervals</li>
+          <li><span class="accent">Interleaved Gradient Noise (IGN)</span> randomizes each step size, hiding banding artifacts from uniform stepping</li>
+        </ul>
+        <div class="img-row" style="margin-top:auto;">
+          <figure>
+            <img src="their_imgs/s3_3_Google_Shape_78_p15.png" alt="IGN noise pattern" />
+            <figcaption>IGN pattern</figcaption>
+          </figure>
+          <figure>
+            <img src="their_imgs/s3_4_Google_Shape_79_p15.png" alt="Banding artifact" />
+            <figcaption>Artifact — uniform step</figcaption>
+          </figure>
+        </div>
+        <div class="source">Source: https://blog.demofox.org/2022/01/01/interleaved-gradient-noise-a-different-kind-of-low-discrepancy-sequence/</div>
+      </div>
+      <div class="right">
+        <img src="their_imgs/s3_2_Google_Shape_77_p15.png" alt="Clean raymarched result with IGN" />
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Henyey-Greenstein -->
+  <div class="slide slide-4">
+    <div class="tag">Rendering</div>
+    <h2>Henyey-Greenstein Phase Function</h2>
+    <ul>
+      <li>Simulates <span class="accent">directional light scattering</span> through cloud water droplets</li>
+      <li><code>g &gt; 0</code> → forward scattering (bright toward the sun) &nbsp;|&nbsp; <code>g &lt; 0</code> → back scattering &nbsp;|&nbsp; <code>g = 0</code> → isotropic</li>
+      <li>Applied at every raymarch step to weight how much light reaches the camera</li>
+    </ul>
+    <div class="content" style="margin-top:0.7rem;">
+      <div class="right" style="flex:0 0 40%;">
+        <img src="their_imgs/s4_3_Google_Shape_89_p16.png" alt="Henyey-Greenstein diagram" />
+      </div>
+      <div class="left" style="flex:1;justify-content:center;">
+        <img src="their_imgs/s4_2_Google_Shape_88_p16.png" alt="HG formula" style="max-height:16vh;object-fit:contain;" />
+        <div class="code-block green">float henyey_greenstein(float cosTheta, float g) {
+    float denom = 1.0 + g*g - 2.0*g*cosTheta;
+    return (1.0 - g*g) / (4.0*PI * pow(denom, 1.5));
+}</div>
+        <div class="source">Source: https://omlc.org/classroom/ece532/class3/hg.html</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Secondary Raymarch + Beer-Lambert -->
+  <div class="slide slide-5">
+    <div class="tag">Rendering</div>
+    <h2>Secondary Raymarch & Beer-Lambert</h2>
+    <div class="content">
+      <div class="left">
+        <ul>
+          <li><span class="accent">Secondary raymarch</span> from each sample point toward the main light source</li>
+          <li>Currently supports <span class="accent">1 directional light</span> source</li>
+          <li><span class="accent">Beer-Lambert Law</span> calculates light falloff through the cloud volume</li>
+        </ul>
+        <div class="code-block">// Extinction along view ray:
+transmittance *= exp(-density * _StepSize);
+
+// Light shadow along light ray:
+lightAtten = exp(-shadowDensity * lightStep * _ShadowDensity);</div>
+      </div>
+      <div class="right">
+        <img src="their_imgs/s5_2_Google_Shape_97_p17.png" alt="Secondary raymarch diagram" />
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Final Color -->
+  <div class="slide slide-6">
+    <div class="tag">Rendering</div>
+    <h2>Final Color Accumulation</h2>
+    <div class="content">
+      <div class="right" style="flex:0 0 38%;">
+        <img src="their_imgs/s6_2_Google_Shape_104_p18.gif" alt="Final volumetric cloud render" />
+      </div>
+      <div class="left" style="flex:1;">
+        <ul>
+          <li>Final color = sum of all light reaching the camera <span class="accent">not blocked by the cloud itself</span></li>
+          <li>Each step: inscattered light × phase function × shadow attenuation × transmittance</li>
+          <li>Alpha = <code>1 − transmittance</code> — fully opaque cloud = zero transmittance</li>
+          <li>Result blended over scene colour via alpha compositing</li>
+        </ul>
+        <div class="code-block orange">float3 inscatter = lightColor * phase * density * shadowAtten;
+accum  += inscatter * transmittance * (1-exp(-density*step));
+transmittance *= exp(-density * step);
+float alpha = saturate(1.0 - transmittance);</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Bonus Fog -->
+  <div class="slide slide-7">
+    <div class="tag">Bonus</div>
+    <h2>Fog Rendering</h2>
+    <ul>
+      <li>Reused <span class="accent">Henyey-Greenstein</span> and raymarching algorithm to render atmospheric fog</li>
+      <li>Two variants: <span class="accent">fullscreen post-process blit</span> and <span class="accent">localized box fog</span></li>
+    </ul>
+    <div class="img-row" style="flex:1;margin-top:1rem;">
+      <figure style="flex:1;">
+        <img src="their_imgs/s7_2_Google_Shape_111_p19.png" alt="Box of fog" style="max-height:52vh;" />
+        <figcaption>Box of fog</figcaption>
+      </figure>
+      <figure style="flex:1;">
+        <img src="their_imgs/s7_3_Google_Shape_112_p19.png" alt="Fullscreen raymarching fog" style="max-height:52vh;" />
+        <figcaption>Fullscreen raymarching</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <!-- 8. References -->
+  <div class="slide slide-8">
+    <div class="tag">Resources &amp; Materials</div>
+    <h2>References</h2>
+    <div class="ref-list">
+      <div class="ref-item">
+        <div class="ref-num">[1] ASSET</div>
+        <div class="ref-title">Blender Volumetric Cloud — BlenderKit</div>
+        <div class="ref-url">https://www.blenderkit.com/asset-gallery-detail/0bf13dfc-5729-4b9c-9238-94782c3b7286/?query=category_subtree:weather</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-num">[2] TUTORIAL</div>
+        <div class="ref-title">Your First Volumetric Fog Shader | Unity URP — YouTube</div>
+        <div class="ref-url">https://www.youtube.com/watch?v=8P338C9vYEE</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-num">[3] TUTORIAL</div>
+        <div class="ref-title">Want to get Blender clouds into #unity? Try these 9 steps #gamedev — YouTube</div>
+        <div class="ref-url">https://www.youtube.com/watch?v=IGx_I4nzfxQ</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-num">[4] PAPER</div>
+        <div class="ref-title">Henyey-Greenstein Phase Function — Oregon Medical Laser Center</div>
+        <div class="ref-url">https://omlc.org/classroom/ece532/class3/hg.html</div>
+      </div>
+      <div class="ref-item">
+        <div class="ref-num">[5] ARTICLE</div>
+        <div class="ref-title">Interleaved Gradient Noise — blog.demofox.org</div>
+        <div class="ref-url">https://blog.demofox.org/2022/01/01/interleaved-gradient-noise-a-different-kind-of-low-discrepancy-sequence/</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button class="nav-btn" id="prev">← Prev</button>
+  <span class="counter" id="counter">1 / 8</span>
+  <button class="nav-btn" id="next">Next →</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let cur = 0;
+  function go(n) {
+    slides[cur].classList.remove('active');
+    cur = (n + slides.length) % slides.length;
+    slides[cur].classList.add('active');
+    document.getElementById('counter').textContent = `${cur+1} / ${slides.length}`;
+  }
+  document.getElementById('next').addEventListener('click', () => go(cur+1));
+  document.getElementById('prev').addEventListener('click', () => go(cur-1));
+  document.addEventListener('keydown', e => {
+    if (e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') go(cur+1);
+    if (e.key==='ArrowLeft' ||e.key==='ArrowUp')                go(cur-1);
+  });
+</script>
+</body>
+</html>
